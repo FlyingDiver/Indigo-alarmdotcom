@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<Actions>
+    <Action id="set_mode" deviceFilter="self.system">
+        <Name>Set Mode</Name>
+        <CallbackMethod>action_set_mode</CallbackMethod>
+        <ConfigUI>
+            <Field id="mode" type="menu" defaultValue="away">
+                <Label>Mode:</Label>
+                <List>
+                    <Option value="off">Off</Option>
+                    <Option value="home">Home</Option>
+                    <Option value="away">Away</Option>
+                </List>
+            </Field>
+        </ConfigUI>
+    </Action>
+</Actions>

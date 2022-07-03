@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<MenuItems>
+    <MenuItem id="authenticate">
+        <Name>Authenticate...</Name>
+        <ConfigUI>
+	        <Field id="auth_code" type="textfield">
+		        <Label>OTP Code:</Label>
+	        </Field>
+	        <Field id="verifyOTP" type="button">
+		        <Label>Complete Authentication:</Label>
+		        <Title> Verify </Title>
+		        <CallbackMethod>verify_otp</CallbackMethod>
+	        </Field>
+        </ConfigUI>
+	</MenuItem>
+</MenuItems>
+
+

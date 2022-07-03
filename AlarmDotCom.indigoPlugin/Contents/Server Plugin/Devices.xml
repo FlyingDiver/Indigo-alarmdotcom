@@ -1,0 +1,126 @@
+<?xml version="1.0"?>
+<Devices>
+    <Device id="system" type="custom">
+        <Name>System</Name>
+        <ConfigUI>
+            <Field id="SupportsStatusRequest" type="checkbox" defaultValue="true" hidden="true" />
+            <Field id="address" type="menu">
+                <Label>System:</Label>
+                <List class="self" method="get_system_list" dynamicReload="true"/>
+                <CallbackMethod>menuChanged</CallbackMethod>
+            </Field>
+        </ConfigUI>
+        <States>
+            <State id="name" defaultValue="">
+                <ValueType>String</ValueType>
+                <TriggerLabel>Name</TriggerLabel>
+                <ControlPageLabel>Name</ControlPageLabel>
+            </State>
+            <State id="battery" defaultValue="">
+                <ValueType>String</ValueType>
+                <TriggerLabel>Battery</TriggerLabel>
+                <ControlPageLabel>Battery</ControlPageLabel>
+            </State>
+            <State id="malfunction" defaultValue="">
+                <ValueType>Boolean</ValueType>
+                <TriggerLabel>Has Malfunction</TriggerLabel>
+                <ControlPageLabel>Has Malfunction</ControlPageLabel>
+            </State>
+        </States>
+    </Device>
+
+   <Device id="partition" type="custom">
+        <Name>Partition</Name>
+        <ConfigUI>
+            <Field id="SupportsStatusRequest" type="checkbox" defaultValue="true" hidden="true" />
+            <Field id="system" type="menu">
+                <Label>System:</Label>
+                <List class="self" method="get_system_list" dynamicReload="true"/>
+                <CallbackMethod>menuChanged</CallbackMethod>
+            </Field>
+            <Field id="address" type="menu">
+                <Label>System:</Label>
+                <List class="self" method="get_partition_list" dynamicReload="true"/>
+                <CallbackMethod>menuChanged</CallbackMethod>
+            </Field>
+        </ConfigUI>
+        <States>
+            <State id="name" defaultValue="">
+                <ValueType>String</ValueType>
+                <TriggerLabel>Name</TriggerLabel>
+                <ControlPageLabel>Name</ControlPageLabel>
+            </State>
+            <State id="battery" defaultValue="">
+                <ValueType>String</ValueType>
+                <TriggerLabel>Battery</TriggerLabel>
+                <ControlPageLabel>Battery</ControlPageLabel>
+            </State>
+            <State id="malfunction" defaultValue="">
+                <ValueType>Boolean</ValueType>
+                <TriggerLabel>Has Malfunction</TriggerLabel>
+                <ControlPageLabel>Has Malfunction</ControlPageLabel>
+            </State>
+            <State id="state" defaultValue="">
+                <ValueType>String</ValueType>
+                <TriggerLabel>State</TriggerLabel>
+                <ControlPageLabel>State</ControlPageLabel>
+            </State>
+             <State id="uncleared_issues" defaultValue="">
+                <ValueType>Boolean</ValueType>
+                <TriggerLabel>Uncleared Issues</TriggerLabel>
+                <ControlPageLabel>Uncleared Issues</ControlPageLabel>
+            </State>
+        </States>
+       <UiDisplayStateId>state</UiDisplayStateId>
+    </Device>
+
+    <Device type="custom" id="sensor">
+        <Name>Sensor</Name>
+        <ConfigUI>
+			<Field id="SupportsStatusRequest" type="checkbox" defaultValue="false" hidden="true" />
+            <Field id="system" type="menu">
+                <Label>System:</Label>
+                <List class="self" method="get_system_list" dynamicReload="true"/>
+                <CallbackMethod>menuChanged</CallbackMethod>
+            </Field>
+            <Field id="partition" type="menu">
+                <Label>Partition:</Label>
+                <List class="self" method="get_partition_list" dynamicReload="true"/>
+                <CallbackMethod>menuChanged</CallbackMethod>
+            </Field>
+            <Field id="address" type="menu">
+                <Label>Sensor:</Label>
+                <List class="self" method="get_device_list" filter="sensor" dynamicReload="true"/>
+                <CallbackMethod>menuChanged</CallbackMethod>
+            </Field>
+        </ConfigUI>
+        <States>
+            <State id="name" defaultValue="">
+                <ValueType>String</ValueType>
+                <TriggerLabel>Name</TriggerLabel>
+                <ControlPageLabel>Name</ControlPageLabel>
+            </State>
+            <State id="battery" defaultValue="">
+                <ValueType>String</ValueType>
+                <TriggerLabel>Battery</TriggerLabel>
+                <ControlPageLabel>Battery</ControlPageLabel>
+            </State>
+            <State id="state" defaultValue="">
+                <ValueType>String</ValueType>
+                <TriggerLabel>State</TriggerLabel>
+                <ControlPageLabel>State</ControlPageLabel>
+            </State>
+            <State id="malfunction" defaultValue="">
+                <ValueType>Boolean</ValueType>
+                <TriggerLabel>Has Malfunction</TriggerLabel>
+                <ControlPageLabel>Has Malfunction</ControlPageLabel>
+            </State>
+            <State id="model_text" defaultValue="">
+                <ValueType>String</ValueType>
+                <TriggerLabel>Model</TriggerLabel>
+                <ControlPageLabel>Model</ControlPageLabel>
+            </State>
+        </States>
+       <UiDisplayStateId>state</UiDisplayStateId>
+    </Device>
+</Devices>

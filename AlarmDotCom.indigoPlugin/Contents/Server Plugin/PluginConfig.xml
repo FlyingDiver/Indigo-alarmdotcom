@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<PluginConfig>
+	<SupportURL>https://github.com/FlyingDiver/indigo-alarmdotcom/issues</SupportURL>
+	<Field id="twofactorcookie" type="textfield"  hidden="true" />
+	<Field id="username" type="textfield">
+		<Label>Username:</Label>
+	</Field>
+	<Field id="password" type="textfield" secure="true">
+		<Label>Password:</Label>
+	</Field>
+	<Field id="separator2" type="separator"/>
+  	<Field id="updateFrequency" type="textfield" defaultValue="15">
+    	<Label>Update frequency (minutes):</Label>
+  	</Field>
+	<Field id="separator3" type="separator"/>
+	<Field id="logLevel" type="menu" defaultValue="20">
+		<Label>Event Logging Level:</Label>
+		<List>
+			<Option value="5">Detailed Debugging Messages</Option>
+			<Option value="10">Debugging Messages</Option>
+			<Option value="20">Informational Messages</Option>
+			<Option value="30">Warning Messages</Option>
+			<Option value="40">Error Messages</Option>
+			<Option value="50">Critical Errors Only</Option>
+		</List>
+	</Field>
+</PluginConfig>
