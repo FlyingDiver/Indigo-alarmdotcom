@@ -7,9 +7,12 @@ import json
 import time
 import threading
 import asyncio
-import aiofiles
-from aiohttp import ClientSession
-import pyalarmdotcomajax
+try:
+    from aiohttp import ClientSession
+    import pyalarmdotcomajax
+except ImportError:
+    raise ImportError("'Required Python libraries missing.  Run 'pip3 install pyalarmdotcomajax aiohttp' in Terminal window, then reload plugin.")
+
 from pyalarmdotcomajax import AlarmController
 from pyalarmdotcomajax import AuthResult
 from pyalarmdotcomajax.devices import Camera
@@ -243,7 +246,7 @@ class Plugin(indigo.PluginBase):
                 for partition in self.known_partitions[valuesDict["system"]].values()
             ]
         except KeyError:
-            devices = []
+            partitions = []
         self.logger.debug(f"get_partition_list: partitions = {partitions}")
         return partitions
 
