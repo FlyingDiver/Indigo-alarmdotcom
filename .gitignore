@@ -133,3 +133,5 @@ dmypy.json
 AlarmDotCom.indigoPlugin/.idea/
 
 .idea/
+
+*.zip
