@@ -1,16 +1,26 @@
 <?xml version="1.0"?>
 <Actions>
-    <Action id="set_mode" deviceFilter="self.system">
+    <Action id="set_mode" deviceFilter="self.partition">
         <Name>Set Mode</Name>
         <CallbackMethod>action_set_mode</CallbackMethod>
         <ConfigUI>
             <Field id="mode" type="menu" defaultValue="away">
                 <Label>Mode:</Label>
                 <List>
-                    <Option value="off">Off</Option>
-                    <Option value="home">Home</Option>
-                    <Option value="away">Away</Option>
+                    <Option value="off">Disarm</Option>
+                    <Option value="home">Arm Home</Option>
+                    <Option value="away">Arm Away</Option>
+                    <Option value="night">Arm Night</Option>
                 </List>
+            </Field>
+            <Field id="force_bypass" type="checkbox" defaultValue="false" hidden="false">
+                <Label>Force Bypass:</Label>
+            </Field>
+            <Field id="no_entry_delay" type="checkbox" defaultValue="false" hidden="false">
+                <Label>No Entry Delay:</Label>
+            </Field>
+            <Field id="silent_arming" type="checkbox" defaultValue="false" hidden="false">
+                <Label>Silent Arming:</Label>
             </Field>
         </ConfigUI>
     </Action>

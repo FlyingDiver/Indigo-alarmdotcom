@@ -9,7 +9,7 @@
 		<Label>Password:</Label>
 	</Field>
 	<Field id="separator2" type="separator"/>
-  	<Field id="updateFrequency" type="textfield" defaultValue="15">
+  	<Field id="updateFrequency" type="textfield" defaultValue="5">
     	<Label>Update frequency (minutes):</Label>
   	</Field>
 	<Field id="separator3" type="separator"/>

@@ -90,8 +90,8 @@ class Plugin(indigo.PluginBase):
         if not password or not len(password):
             errorDict['password'] = "Password is required"
         update = valuesDict.get('updateFrequency', None)
-        if not update or float(update) < 5.0:
-            errorDict['updateFrequency'] = "Update frequency must be at least 5 minutes"
+        if not update or float(update) < 3.0:
+            errorDict['updateFrequency'] = "Update frequency must be at least 3 minutes"
         if len(errorDict) > 0:
             return False, valuesDict, errorDict
         return True, valuesDict
@@ -268,32 +268,29 @@ class Plugin(indigo.PluginBase):
     # Menu and Action methods
     ########################################
 
-    def actionControlDevice(self, action, device):
-        ss_system = self.known_systems[int(device.address)]
-        ss_device = ss_system.locks[int(device.device_serial)]
-
-        if action.deviceAction == indigo.kDeviceAction.TurnOn:
-            return
-
-        elif action.deviceAction == indigo.kDeviceAction.TurnOff:
-            return
-
     def action_set_mode(self, action, device, callerWaitingForResult):
         self.logger.threaddebug(f"action_set_mode: action = {action}, device = {device.name}, callerWaitingForResult = {callerWaitingForResult}")
         mode = action.props.get("mode", None)
-        if mode not in ['away', 'home', 'off']:
+        if mode not in ['away', 'home', 'off', 'night']:
             self.logger.error(f"action_set_mode: Invalid mode '{mode}'")
             return
-        system = self.known_systems[int(device.address)]
-        self.event_loop.create_task(self.async_set_mode(system, mode))
 
-    async def async_set_mode(self, system, mode):
+        force_bypass = action.props.get("force_bypass", False)
+        no_entry_delay = action.props.get("no_entry_delay", False)
+        silent_arming = action.props.get("silent_arming", False)
+
+        part = self.known_partitions[device.pluginProps['system']][device.address]
+        self.event_loop.create_task(self.async_set_mode(part, mode, force_bypass, no_entry_delay, silent_arming))
+
+    async def async_set_mode(self, part, mode, force_bypass, no_entry_delay, silent_arming):
         if mode == 'off':
-            await system.async_set_off()
+            await part.async_disarm(force_bypass=force_bypass, no_entry_delay=no_entry_delay, silent_arming=silent_arming)
         elif mode == 'away':
-            await system.async_set_away()
+            await part.async_arm_away(force_bypass=force_bypass, no_entry_delay=no_entry_delay, silent_arming=silent_arming)
         elif mode == 'home':
-            await system.async_set_home()
+            await part.async_arm_stay(force_bypass=force_bypass, no_entry_delay=no_entry_delay, silent_arming=silent_arming)
+        elif mode == 'night':
+            await part.async_arm_night(force_bypass=force_bypass, no_entry_delay=no_entry_delay, silent_arming=silent_arming)
         else:
             self.logger.error(f"async_set_mode: Invalid mode '{mode}'")
 
@@ -316,25 +313,25 @@ class Plugin(indigo.PluginBase):
     # update from the alarm.com servers
     async def async_system_refresh(self) -> None:
         await self.alarm.async_update()
-        self.logger.debug(f"Systems ({len(self.alarm.systems)})")
+        self.logger.threaddebug(f"Systems ({len(self.alarm.systems)})")
         for device in self.alarm.systems:
-            self.logger.debug(f"Name: {device.name}, id_: {device.id_}, unit_id: {device.unit_id}")
+            self.logger.threaddebug(f"Name: {device.name}, id_: {device.id_}, unit_id: {device.unit_id}")
             self.known_systems[str(device.id_)] = device
             self.known_partitions[str(device.id_)] = {}
             self.known_sensors[str(device.id_)] = {}
 
-        self.logger.debug(f"Partitions ({len(self.alarm.partitions)})")
+        self.logger.threaddebug(f"Partitions ({len(self.alarm.partitions)})")
         for device in self.alarm.partitions:
             try:
-                self.logger.debug(f"Name: {device.name} ({device.id_}), State: {device.state}, System: {device.system_id} {str(device)}")
+                self.logger.threaddebug(f"Name: {device.name} ({device.id_}), State: {device.state}, System: {device.system_id}")
                 self.known_partitions[str(device.system_id)][str(device.id_)] = device
                 self.known_sensors[str(device.system_id)][str(device.id_)] = {}
             except KeyError as err:
                 self.logger.error(f"async_system_refresh: {err}")
 
-        self.logger.debug(f"Sensors ({len(self.alarm.sensors)})")
+        self.logger.threaddebug(f"Sensors ({len(self.alarm.sensors)})")
         for device in self.alarm.sensors:
-            self.logger.debug(f"Name: {device.name} ({device.id_}), State: {device.state}, System: {device.system_id}, Partition: {device.partition_id}")
+            self.logger.threaddebug(f"Name: {device.name} ({device.id_}), State: {device.state}, System: {device.system_id}, Partition: {device.partition_id}")
             self.known_sensors[str(device.system_id)][str(device.partition_id)][str(device.id_)] = device
 
         self.logger.threaddebug(f"known_systems: {self.known_systems}")
