@@ -267,6 +267,30 @@ class Plugin(indigo.PluginBase):
     ########################################
     # Menu and Action methods
     ########################################
+    def homekit_set_mode(self, action, device, callerWaitingForResult):
+        self.logger.threaddebug(f"homekit_set_mode: action = {action}, device = {device.name}, callerWaitingForResult = {callerWaitingForResult}")
+        mode = int(action.props.get("mode", -1))
+        if mode == 0:
+            mode = "home"
+        elif mode == 1:
+            mode = "away"
+        elif mode == 2:
+            mode = "night"
+        elif mode == 3:
+            mode = "off"
+        elif mode == 4:
+            self.logger.error(f"homekit_set_mode: Unable to set mode to 'triggered'")
+            return
+        else:
+            self.logger.error(f"homekit_set_mode: Invalid mode '{mode}'")
+            return
+
+        force_bypass = action.props.get("force_bypass", False)
+        no_entry_delay = action.props.get("no_entry_delay", False)
+        silent_arming = action.props.get("silent_arming", False)
+
+        part = self.known_partitions[device.pluginProps['system']][device.address]
+        self.event_loop.create_task(self.async_set_mode(part, mode, force_bypass, no_entry_delay, silent_arming))
 
     def action_set_mode(self, action, device, callerWaitingForResult):
         self.logger.threaddebug(f"action_set_mode: action = {action}, device = {device.name}, callerWaitingForResult = {callerWaitingForResult}")

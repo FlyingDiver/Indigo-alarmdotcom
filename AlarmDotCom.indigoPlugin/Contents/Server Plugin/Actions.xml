@@ -1,5 +1,8 @@
 <?xml version="1.0"?>
 <Actions>
+    <Action id="homekit_set_mode" uiPath="hidden">
+        <CallbackMethod>homekit_set_mode</CallbackMethod>
+    </Action>
     <Action id="set_mode" deviceFilter="self.partition">
         <Name>Set Mode</Name>
         <CallbackMethod>action_set_mode</CallbackMethod>
