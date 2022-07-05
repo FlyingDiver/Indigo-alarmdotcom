@@ -56,10 +56,10 @@ class Plugin(indigo.PluginBase):
 
         pfmt = logging.Formatter('%(asctime)s.%(msecs)03d\t[%(levelname)8s] %(name)20s.%(funcName)-25s%(message)s', datefmt='%Y-%m-%d %H:%M:%S')
         self.plugin_file_handler.setFormatter(pfmt)
-        self.logLevel = int(pluginPrefs.get("logLevel", logging.INFO))
-        self.logger.debug(f"LogLevel = {self.logLevel}")
+        self.logLevel = int(pluginPrefs.get("logLevel", 20))
         self.indigo_log_handler.setLevel(self.logLevel)
         self.plugin_file_handler.setLevel(self.logLevel)
+        self.logger.debug(f"LogLevel = {self.logLevel}")
 
         self.pluginPrefs = pluginPrefs
         self.event_loop = None
@@ -141,28 +141,45 @@ class Plugin(indigo.PluginBase):
             self.logger.debug(f"async_verify_otp: generated_2fa_cookie = {generated_2fa_cookie}")
             self.pluginPrefs["twofactorcookie"] = generated_2fa_cookie
             indigo.server.savePluginPrefs()
+            self.auth_state = await self.alarm.async_login()
+            self.logger.debug(f"Alarm.com self.auth_state = {self.auth_state}")
 
     ##############################################################################################
 
     async def async_main(self):
         self.logger.debug("async_main starting")
+        while True:
+            if self.pluginPrefs.get('username', None) and self.pluginPrefs.get('password', None):
+                break
+            await asyncio.sleep(2)  # wait for prefs to be set
 
         """Create the aiohttp session and run."""
         async with ClientSession() as self.session:
 
-            self.alarm = AlarmController(username=self.pluginPrefs.get("username"), password=self.pluginPrefs.get("password"),
+            try:
+                self.alarm = AlarmController(username=self.pluginPrefs.get("username"), password=self.pluginPrefs.get("password"),
                                     websession=self.session, twofactorcookie=self.pluginPrefs.get("twofactorcookie", None))
+            except Exception as err:
+                self.logger.error(f"AlarmController creation failed: {err}")
+                return
 
             try:
                 self.auth_state = await self.alarm.async_login()
             except NagScreen:
-                self.logger.warning("Alarm.com authentication failed - Two-factor authentication required")
+                self.logger.warning("Alarm.com login failed - Two-factor authentication required")
+                return
+            except Exception as err:
+                self.logger.error(f"Alarm.com login failed: {err}")
+                return
+
+            self.logger.debug(f"Alarm.com self.auth_state = {self.auth_state}")
 
             if self.alarm and self.auth_state == AuthResult.OTP_REQUIRED:
                 self.logger.warning("Alarm.com authentication in progress - enter OTP code in plugin menu Authenticate...")
 
             elif self.alarm and self.auth_state == AuthResult.ENABLE_TWO_FACTOR:
                 self.logger.warning("Alarm.com authentication failed - Two-factor authentication required")
+                return
 
             while not self.alarm or self.auth_state != AuthResult.SUCCESS:
                 await asyncio.sleep(1.0)
