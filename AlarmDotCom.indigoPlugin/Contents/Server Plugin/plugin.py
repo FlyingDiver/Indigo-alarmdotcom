@@ -205,11 +205,11 @@ class Plugin(indigo.PluginBase):
         valuesDict = indigo.Dict(pluginProps)
         errorsDict = indigo.Dict()
 
-        if typeId != "system" and len(self.known_systems) > 0:
+        # pre-load system and partition values where appropriate
+        if typeId != "system" and "system" not in valuesDict and len(self.known_systems) > 0:
             valuesDict["system"] = list(self.known_systems.keys())[0]
-
-        if typeId != "partition" and len(self.known_partitions) > 0:
-            valuesDict["partition"] = list(self.known_partitions.keys())[0]
+        if typeId == "sensor" and "partition" not in valuesDict and "system" in valuesDict and len(self.known_partitions) > 0:
+            valuesDict["partition"] = list(self.known_partitions[valuesDict['system']].keys())[0]
 
         return valuesDict, errorsDict
 
